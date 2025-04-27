@@ -1,0 +1,9 @@
+name: sharedllm
+channels:
+  - defaults
+  - conda-forge
+dependencies:
+  - python=3.10
+  - grpcio
+  - grpcio-tools
+  - langchain

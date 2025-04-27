@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+service SentenceEncoder {
+  rpc EncodeDocument(EncodeRequest) returns (EncodeResponse);
+}
+
+message EncodeRequest {
+  string document = 1;  
+}
+
+message EncodeResponse {
+  repeated float embedding = 1;  
+}
+
