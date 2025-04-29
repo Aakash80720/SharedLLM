@@ -4,9 +4,11 @@ import time
 import sentence_transformer_pb2_grpc
 import sentence_transformer_pb2
 from sentence_transformers import SentenceTransformer
+from transformers import pipeline
 
 print("Loading SentenceTransformer model...")
 model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+summerizer = pipeline("summarization")
 print("Model loaded successfully.")
 
 class SentenceEncoderServicer(sentence_transformer_pb2_grpc.SentenceEncoderServicer):
