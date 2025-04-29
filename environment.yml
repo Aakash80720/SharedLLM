@@ -7,3 +7,5 @@ dependencies:
   - grpcio
   - grpcio-tools
   - langchain
+  - sentence-transformers
+  - faiss-cpu

@@ -1,3 +1,4 @@
+import re
 import grpc
 import sentence_transformer_pb2_grpc
 import sentence_transformer_pb2
@@ -17,9 +18,10 @@ def store_embeddings(embeddings):
     # Initialize FAISS index
     dimension = len(embeddings[0])
     index = faiss.IndexFlatL2(dimension) 
-
     embeddings_np = np.array(embeddings).astype('float32')
     index.add(embeddings_np)
+    print("Embeddings stored in FAISS index.")
+    return index
     
 def sample_document():
     file = open(r"sample.txt", "r")
@@ -33,10 +35,11 @@ def sample_document():
     texts = text_splitter.split_text(text)
     return texts
 
-def find_similarity(query_embedding, k=5):
+def find_similarity(index, query_embedding, k=30):
     # Perform a search in the FAISS index
-    query_embedding = np.array(query_embedding, dtype=np.float32).reshape(1, -1)
+    query_embedding = np.array(query_embedding).astype('float32').reshape(1, -1)
     distances, indices = index.search(query_embedding, k)
+    print("test: ", index.ntotal)
     return distances, indices
 
 async def run():
@@ -49,17 +52,19 @@ async def run():
             tasks.append(send_request(stub, sentence))
         result = await asyncio.gather(*tasks)
         print("Received response.")
-        store_embeddings(result)
+        index = store_embeddings(result)
 
         print("Query section started")
         try:
             while True:
                 query = input("Enter your query: ")
                 query_embedding = await send_request(stub, query)
-                distances, index = find_similarity(query_embedding, k=5)
-                print("Top 5 similar sentences:")
-                for idx, distance in zip(index[0], distances[0]):
+                print("Query embedding received.", query_embedding)
+                distances, doc_index = find_similarity(index, query_embedding, k=5)
+                print("Top 5 similar sentences:\n")
+                for idx, distance in zip(doc_index[0], distances[0]):
                     print(f"{sentences[idx]}, Distance: {distance}")
+                    print()
         except KeyboardInterrupt:
             print("Exiting query section.")
         print("Client stopped.")
