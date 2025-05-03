@@ -9,3 +9,14 @@ dependencies:
   - langchain
   - sentence-transformers
   - faiss-cpu
+  - numpy
+  - pandas
+  - scikit-learn
+  - tqdm
+  - uvicorn
+  - fastapi
+  - pytest
+  - black
+  - isort
+  - mypy
+  - fastmcp
