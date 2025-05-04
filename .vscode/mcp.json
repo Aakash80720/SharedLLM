@@ -1,0 +1,19 @@
+{
+    "servers": {
+        "my-mcp-server-cf3cbab1": {
+            "type": "stdio",
+            "command": "C:/Users/Admin/anaconda3/envs/sharedllm/Scripts/uvicorn",
+            "args": [
+                "src.services.tools:mcp",
+                "--host",
+                "127.0.0.1",
+                "--port",
+                "8000"
+            ],
+            "env": {
+                "PYTHONPATH": "c:/Users/Admin/Desktop/Aakash/SharedLLM/",
+                "PATH": "C:/Users/Admin/anaconda3/envs/sharedllm/Scripts;C:/Users/Admin/anaconda3/envs/sharedllm"
+            }
+        }
+    }
+}
