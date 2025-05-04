@@ -9,7 +9,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from fastmcp import FastMCP
 from scipy.cluster.hierarchy import linkage, fcluster
 from collections import defaultdict
-mcp = FastMCP("RemoteClient")
+
 
 class client:
    def __init__(self):
@@ -17,16 +17,18 @@ class client:
          self.document = None
 class EmbeddingClient(client):
     def __init__(self):
+        super().__init__()
         self.stub = sentence_transformer_pb2_grpc.SentenceEncoderStub(self.channel)
 
-    @mcp.tool("document_embedding", description="Get the embedding of a document")
-    async def encode_document(self, document):
+    async def encode_document(self, document : str):
         request = sentence_transformer_pb2.EncodeRequest(document=document)
         response = await self.stub.EncodeDocument(request)
         return response.embedding
-    
+
+
 class ClusteringClient(client):
     def __init__(self):
+        super().__init__()
         self.stub = sentence_transformer_pb2_grpc.SentenceEncoderStub(self.channel)
 
     @mcp.tool("getting_linkage", description="Get the dendrogram of a document by embedding")
@@ -44,7 +46,6 @@ class ClusteringClient(client):
 
 index = faiss.IndexFlatL2(384) 
 
-@mcp.tool("vectorize_document", description="Get the embedding of a document")
 def store_embeddings(embeddings):
     # Initialize FAISS index
     dimension = len(embeddings[0])
@@ -66,7 +67,6 @@ def sample_document():
     texts = text_splitter.split_text(text)
     return texts
 
-@mcp.tool("find_similarity", description="Find the most similar sentences")
 def find_similarity(index, query_embedding, k=30):
     # Perform a search in the FAISS index
     query_embedding = np.array(query_embedding).astype('float32').reshape(1, -1)
@@ -75,7 +75,7 @@ def find_similarity(index, query_embedding, k=30):
     return distances, indices
 
 async def run():
-    client = EmbeddingClient()
+    
     async with grpc.aio.insecure_channel('localhost:50051') as channel:
         stub = sentence_transformer_pb2_grpc.SentenceEncoderStub(channel)
         sentences =  sample_document()
